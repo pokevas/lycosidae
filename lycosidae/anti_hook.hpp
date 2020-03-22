@@ -8,7 +8,7 @@
 
 #include "utils.hpp"
 
-inline void* teb()
+__declspec(noinline) void* teb()
 {
 #ifdef _AMD64_
 	return reinterpret_cast<void*>(__readgsqword(0x30));
@@ -17,7 +17,7 @@ inline void* teb()
 #endif
 }
 
-inline unsigned int pid()
+__declspec(noinline) unsigned int pid()
 {
 #ifdef _AMD64_
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x40);
@@ -26,7 +26,7 @@ inline unsigned int pid()
 #endif
 }
 
-inline unsigned int tid()
+__declspec(noinline) unsigned int tid()
 {
 #ifdef _AMD64_
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x48);
@@ -35,20 +35,20 @@ inline unsigned int tid()
 #endif
 }
 
-inline PVOID alloc(OPTIONAL PVOID base, SIZE_T size, const ULONG protect)
+__declspec(noinline) PVOID alloc(OPTIONAL PVOID base, SIZE_T size, const ULONG protect)
 {
 	const auto status = NtAllocateVirtualMemory(reinterpret_cast<HANDLE>(-1), &base, base ? 12 : 0, &size,
 	                                            MEM_RESERVE | MEM_COMMIT, protect);
 	return NT_SUCCESS(status) ? base : nullptr;
 }
 
-inline VOID ah_free(PVOID base)
+__declspec(noinline) VOID ah_free(PVOID base)
 {
 	SIZE_T region_size = 0;
 	NtFreeVirtualMemory(reinterpret_cast<HANDLE>(-1), &base, &region_size, MEM_RELEASE);
 }
 
-inline BOOLEAN NTAPI enum_processes(BOOLEAN (*callback)(pwrk_system_process_information process, PVOID argument),
+__declspec(noinline) BOOLEAN NTAPI enum_processes(BOOLEAN (*callback)(pwrk_system_process_information process, PVOID argument),
                                     PVOID arg)
 {
 	ULONG length = 0;
@@ -90,7 +90,7 @@ inline BOOLEAN NTAPI enum_processes(BOOLEAN (*callback)(pwrk_system_process_info
 	return TRUE;
 }
 
-inline BOOLEAN suspend_resume_callback(pwrk_system_process_information process, PVOID argument)
+__declspec(noinline) BOOLEAN suspend_resume_callback(pwrk_system_process_information process, PVOID argument)
 {
 	if (!process || !argument)
 	{
@@ -139,7 +139,7 @@ inline BOOLEAN suspend_resume_callback(pwrk_system_process_information process, 
 	return FALSE;
 }
 
-inline BOOLEAN suspend_threads()
+__declspec(noinline) BOOLEAN suspend_threads()
 {
 	suspend_resume_info info;
 	info.current_pid = pid();
@@ -149,7 +149,7 @@ inline BOOLEAN suspend_threads()
 	return enum_processes(suspend_resume_callback, &info);
 }
 
-inline BOOLEAN resume_threads()
+__declspec(noinline) BOOLEAN resume_threads()
 {
 	suspend_resume_info info;
 	info.current_pid = pid();
@@ -159,7 +159,7 @@ inline BOOLEAN resume_threads()
 	return enum_processes(suspend_resume_callback, &info);
 }
 
-inline DWORD get_module_name(const HMODULE module, LPSTR module_name, const DWORD size)
+__declspec(noinline) DWORD get_module_name(const HMODULE module, LPSTR module_name, const DWORD size)
 {
 	const auto length = GetModuleFileNameExA(GetCurrentProcess(), module, module_name, size);
 	if (length == 0)
@@ -172,7 +172,7 @@ inline DWORD get_module_name(const HMODULE module, LPSTR module_name, const DWOR
 	return err_success;
 }
 
-inline DWORD protect_memory(LPVOID address, const SIZE_T size, const DWORD new_protect)
+__declspec(noinline) DWORD protect_memory(LPVOID address, const SIZE_T size, const DWORD new_protect)
 {
 	DWORD old_protect = 0;
 
@@ -186,7 +186,7 @@ inline DWORD protect_memory(LPVOID address, const SIZE_T size, const DWORD new_p
 	return old_protect;
 }
 
-inline DWORD replace_exec_section(const HMODULE module, LPVOID mapping)
+__declspec(noinline) DWORD replace_exec_section(const HMODULE module, LPVOID mapping)
 {
 	const auto image_dos_header = static_cast<PIMAGE_DOS_HEADER>(mapping);
 
@@ -230,7 +230,7 @@ inline DWORD replace_exec_section(const HMODULE module, LPVOID mapping)
 	return err_text_section_not_found;
 }
 
-inline DWORD unhook_module(const HMODULE module)
+__declspec(noinline) DWORD unhook_module(const HMODULE module)
 {
 	CHAR module_name[MAX_PATH];
 
@@ -293,7 +293,7 @@ inline DWORD unhook_module(const HMODULE module)
 }
 
 
-inline HMODULE add_module(const char* lib_name)
+__declspec(noinline) HMODULE add_module(const char* lib_name)
 {
 	auto module = GetModuleHandleA(lib_name);
 
@@ -305,7 +305,7 @@ inline HMODULE add_module(const char* lib_name)
 	return module;
 }
 
-inline DWORD unhook(const char* lib_name)
+__declspec(noinline) DWORD unhook(const char* lib_name)
 {
 	const auto module = add_module(lib_name);
 

@@ -10,7 +10,7 @@
 
 #include "utils.hpp"
 
-int check_remote_debugger_present_api()
+__declspec(noinline) int check_remote_debugger_present_api()
 {
 	auto dbg_present = 0;
 
@@ -19,7 +19,7 @@ int check_remote_debugger_present_api()
 	return dbg_present;
 }
 
-int nt_close_invalid_handle()
+__declspec(noinline) int nt_close_invalid_handle()
 {
 	const auto nt_close = reinterpret_cast<NtCloseTypedef>(GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtClose"));
 
@@ -35,7 +35,7 @@ int nt_close_invalid_handle()
 	return 0;
 }
 
-int nt_query_information_process_debug_flags()
+__declspec(noinline) int nt_query_information_process_debug_flags()
 {
 	const auto debug_flags = 0x1f;
 
@@ -56,7 +56,7 @@ int nt_query_information_process_debug_flags()
 	return 0;
 }
 
-int nt_query_information_process_debug_object()
+__declspec(noinline) int nt_query_information_process_debug_object()
 {
 	const auto debug_object_handle = 0x1e;
 
@@ -80,7 +80,7 @@ int nt_query_information_process_debug_object()
 }
 
 
-int nt_query_object_all_types_information()
+__declspec(noinline) int nt_query_object_all_types_information()
 {
 	const auto query_object = reinterpret_cast<NtQueryObjectTypedef>(GetProcAddress(
 		GetModuleHandleW(L"ntdll.dll"), "NtQueryObject"));
@@ -145,7 +145,7 @@ int nt_query_object_all_types_information()
 	return 0;
 }
 
-int process_job()
+__declspec(noinline) int process_job()
 {
 	auto found_problem = 0;
 
@@ -212,7 +212,7 @@ int process_job()
 	return found_problem;
 }
 
-int titanhide()
+__declspec(noinline) int titanhide()
 {
 	const auto module = GetModuleHandleW(L"ntdll.dll");
 

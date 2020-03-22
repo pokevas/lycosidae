@@ -4,7 +4,7 @@
 
 int main()
 {
-	// Anti Hook
+	// Anti hook usermode
 	//
 	const auto ntdll = unhook("ntdll.dll");
 	if (ntdll == 0)
@@ -34,7 +34,7 @@ int main()
 		log("user32 fail restored\r\n");
 	}
 	
-	// Lycosidae
+	// Debugger detect
 	// 
 	if (nt_close_invalid_handle() != 0)
 	{
