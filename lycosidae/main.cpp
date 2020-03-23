@@ -1,9 +1,13 @@
+#include "VirtualizerSDK.h"
+
 #include "utils.hpp"
 #include "anti_hook.hpp"
 #include "debugger_detect.hpp"
 
 int main()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	// Anti hook usermode
 	//
 	const auto ntdll = unhook("ntdll.dll");
@@ -15,6 +19,7 @@ int main()
 	{
 		log("ntdll fail restored\r\n");
 	}
+
 	const auto kernel = unhook("kernel32.dll");
 	if (kernel == 0)
 	{
@@ -24,6 +29,7 @@ int main()
 	{
 		log("kernel32 fail restored\r\n");
 	}
+
 	const auto user32 = unhook("user32.dll");
 	if (user32 == 0)
 	{
@@ -74,6 +80,8 @@ int main()
 	log("Foo program. Check source code.\r\n");
 
 	getchar();
+
+	VIRTUALIZER_TIGER_WHITE_END
 
 	return 0;
 }

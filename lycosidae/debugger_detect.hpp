@@ -12,15 +12,21 @@
 
 __declspec(noinline) int check_remote_debugger_present_api()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	auto dbg_present = 0;
 
 	CheckRemoteDebuggerPresent(GetCurrentProcess(), &dbg_present);
+
+	VIRTUALIZER_TIGER_WHITE_END
 
 	return dbg_present;
 }
 
 __declspec(noinline) int nt_close_invalid_handle()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	const auto nt_close = reinterpret_cast<NtCloseTypedef>(GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtClose"));
 
 	__try
@@ -32,11 +38,15 @@ __declspec(noinline) int nt_close_invalid_handle()
 		return 1;
 	}
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return 0;
 }
 
 __declspec(noinline) int nt_query_information_process_debug_flags()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	const auto debug_flags = 0x1f;
 
 	const auto query_info_process = reinterpret_cast<NtQueryInformationProcessTypedef>(GetProcAddress(
@@ -53,11 +63,15 @@ __declspec(noinline) int nt_query_information_process_debug_flags()
 		return 1;
 	}
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return 0;
 }
 
 __declspec(noinline) int nt_query_information_process_debug_object()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	const auto debug_object_handle = 0x1e;
 
 	const auto query_info_process = reinterpret_cast<NtQueryInformationProcessTypedef>(GetProcAddress(
@@ -76,12 +90,16 @@ __declspec(noinline) int nt_query_information_process_debug_object()
 		return 1;
 	}
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return 0;
 }
 
 
 __declspec(noinline) int nt_query_object_all_types_information()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	const auto query_object = reinterpret_cast<NtQueryObjectTypedef>(GetProcAddress(
 		GetModuleHandleW(L"ntdll.dll"), "NtQueryObject"));
 
@@ -142,11 +160,15 @@ __declspec(noinline) int nt_query_object_all_types_information()
 
 	VirtualFree(address, 0, MEM_RELEASE);
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return 0;
 }
 
 __declspec(noinline) int process_job()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	auto found_problem = 0;
 
 	const auto struct_size = sizeof(JOBOBJECT_BASIC_PROCESS_ID_LIST) + sizeof(ULONG_PTR) * 1024;
@@ -209,11 +231,15 @@ __declspec(noinline) int process_job()
 		free(process_id_list);
 	}
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return found_problem;
 }
 
 __declspec(noinline) int titanhide()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	const auto module = GetModuleHandleW(L"ntdll.dll");
 
 	const auto information = reinterpret_cast<NtQuerySystemInformationTypedef>(GetProcAddress(
@@ -227,6 +253,8 @@ __declspec(noinline) int titanhide()
 
 	const auto ret = sci.CodeIntegrityOptions & CODEINTEGRITY_OPTION_TESTSIGN || sci.CodeIntegrityOptions &
 		CODEINTEGRITY_OPTION_DEBUGMODE_ENABLED;
+
+	VIRTUALIZER_TIGER_WHITE_END
 
 	return ret;
 }

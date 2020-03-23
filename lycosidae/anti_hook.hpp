@@ -10,7 +10,12 @@
 
 __declspec(noinline) void* teb()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 #ifdef _AMD64_
+
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return reinterpret_cast<void*>(__readgsqword(0x30));
 #else
 	return reinterpret_cast<void*>(__readfsdword(0x18));
@@ -19,7 +24,12 @@ __declspec(noinline) void* teb()
 
 __declspec(noinline) unsigned int pid()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 #ifdef _AMD64_
+
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x40);
 #else
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x20);
@@ -28,7 +38,12 @@ __declspec(noinline) unsigned int pid()
 
 __declspec(noinline) unsigned int tid()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 #ifdef _AMD64_
+
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x48);
 #else
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x24);
@@ -37,20 +52,30 @@ __declspec(noinline) unsigned int tid()
 
 __declspec(noinline) PVOID alloc(OPTIONAL PVOID base, SIZE_T size, const ULONG protect)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	const auto status = NtAllocateVirtualMemory(reinterpret_cast<HANDLE>(-1), &base, base ? 12 : 0, &size,
 	                                            MEM_RESERVE | MEM_COMMIT, protect);
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return NT_SUCCESS(status) ? base : nullptr;
 }
 
 __declspec(noinline) VOID ah_free(PVOID base)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	SIZE_T region_size = 0;
 	NtFreeVirtualMemory(reinterpret_cast<HANDLE>(-1), &base, &region_size, MEM_RELEASE);
+
+	VIRTUALIZER_TIGER_WHITE_END
 }
 
 __declspec(noinline) BOOLEAN NTAPI enum_processes(BOOLEAN (*callback)(pwrk_system_process_information process, PVOID argument),
                                     PVOID arg)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	ULONG length = 0;
 
 	auto status = NtQuerySystemInformation(SystemProcessInformation, nullptr, 0, &length);
@@ -87,11 +112,15 @@ __declspec(noinline) BOOLEAN NTAPI enum_processes(BOOLEAN (*callback)(pwrk_syste
 
 	ah_free(info);
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return TRUE;
 }
 
 __declspec(noinline) BOOLEAN suspend_resume_callback(pwrk_system_process_information process, PVOID argument)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	if (!process || !argument)
 	{
 		return FALSE;
@@ -136,31 +165,43 @@ __declspec(noinline) BOOLEAN suspend_resume_callback(pwrk_system_process_informa
 		}
 	}
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return FALSE;
 }
 
 __declspec(noinline) BOOLEAN suspend_threads()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	suspend_resume_info info;
 	info.current_pid = pid();
 	info.current_tid = tid();
 	info.type = srt_suspend;
+
+	VIRTUALIZER_TIGER_WHITE_END
 
 	return enum_processes(suspend_resume_callback, &info);
 }
 
 __declspec(noinline) BOOLEAN resume_threads()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	suspend_resume_info info;
 	info.current_pid = pid();
 	info.current_tid = tid();
 	info.type = srt_resume;
+
+	VIRTUALIZER_TIGER_WHITE_END
 
 	return enum_processes(suspend_resume_callback, &info);
 }
 
 __declspec(noinline) DWORD get_module_name(const HMODULE module, LPSTR module_name, const DWORD size)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	const auto length = GetModuleFileNameExA(GetCurrentProcess(), module, module_name, size);
 	if (length == 0)
 	{
@@ -169,11 +210,15 @@ __declspec(noinline) DWORD get_module_name(const HMODULE module, LPSTR module_na
 		return err_mod_name_not_found;
 	}
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return err_success;
 }
 
 __declspec(noinline) DWORD protect_memory(LPVOID address, const SIZE_T size, const DWORD new_protect)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	DWORD old_protect = 0;
 
 	const auto b_ret = VirtualProtect(address, size, new_protect, &old_protect);
@@ -183,11 +228,15 @@ __declspec(noinline) DWORD protect_memory(LPVOID address, const SIZE_T size, con
 		return 0;
 	}
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return old_protect;
 }
 
 __declspec(noinline) DWORD replace_exec_section(const HMODULE module, LPVOID mapping)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	const auto image_dos_header = static_cast<PIMAGE_DOS_HEADER>(mapping);
 
 	const auto image_nt_headers = reinterpret_cast<PIMAGE_NT_HEADERS>(reinterpret_cast<DWORD_PTR>(mapping) +
@@ -227,11 +276,16 @@ __declspec(noinline) DWORD replace_exec_section(const HMODULE module, LPVOID map
 			return err_success;
 		}
 	}
+
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return err_text_section_not_found;
 }
 
 __declspec(noinline) DWORD unhook_module(const HMODULE module)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	CHAR module_name[MAX_PATH];
 
 	ZeroMemory(module_name, sizeof module_name);
@@ -289,12 +343,16 @@ __declspec(noinline) DWORD unhook_module(const HMODULE module)
 	CloseHandle(file_mapping);
 	CloseHandle(file);
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return err_success;
 }
 
 
 __declspec(noinline) HMODULE add_module(const char* lib_name)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	auto module = GetModuleHandleA(lib_name);
 
 	if (!module)
@@ -302,16 +360,22 @@ __declspec(noinline) HMODULE add_module(const char* lib_name)
 		module = LoadLibraryA(lib_name);
 	}
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return module;
 }
 
 __declspec(noinline) DWORD unhook(const char* lib_name)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	const auto module = add_module(lib_name);
 
 	const auto h_mod = unhook_module(module);
 
 	FreeModule(module);
+
+	VIRTUALIZER_TIGER_WHITE_END
 
 	return h_mod;
 }

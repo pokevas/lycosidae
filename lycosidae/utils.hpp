@@ -108,6 +108,8 @@ typedef struct object_all_information
 
 __declspec(noinline) int strcmp_impl(const char* x, const char* y)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	while (*x)
 	{
 		if (*x != *y)
@@ -116,18 +118,26 @@ __declspec(noinline) int strcmp_impl(const char* x, const char* y)
 		y++;
 	}
 
+	VIRTUALIZER_TIGER_WHITE_END
+
 	return *static_cast<const char*>(x) - *static_cast<const char*>(y);
 }
 
 __declspec(noinline) void log()
 {
+	VIRTUALIZER_TIGER_WHITE_START
+	VIRTUALIZER_TIGER_WHITE_END
 }
 
 template <typename First, typename ...Rest>
 __declspec(noinline) void log(First&& message, Rest&&...rest)
 {
+	VIRTUALIZER_TIGER_WHITE_START
+
 	cout << forward<First>(message);
 	log(forward<Rest>(rest)...);
+
+	VIRTUALIZER_TIGER_WHITE_END
 }
 
 #endif
