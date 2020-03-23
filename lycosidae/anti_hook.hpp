@@ -7,43 +7,30 @@
 #pragma comment (lib, "ntdll.lib")
 
 #include "utils.hpp"
+#include "hide_str.hpp"
+using namespace hide_string;
 
-__declspec(noinline) void* teb()
+__forceinline void* teb()
 {
-	VIRTUALIZER_TIGER_WHITE_START
-
 #ifdef _AMD64_
-
-	VIRTUALIZER_TIGER_WHITE_END
-
 	return reinterpret_cast<void*>(__readgsqword(0x30));
 #else
 	return reinterpret_cast<void*>(__readfsdword(0x18));
 #endif
 }
 
-__declspec(noinline) unsigned int pid()
+__forceinline unsigned int pid()
 {
-	VIRTUALIZER_TIGER_WHITE_START
-
 #ifdef _AMD64_
-
-	VIRTUALIZER_TIGER_WHITE_END
-
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x40);
 #else
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x20);
 #endif
 }
 
-__declspec(noinline) unsigned int tid()
+__forceinline unsigned int tid()
 {
-	VIRTUALIZER_TIGER_WHITE_START
-
 #ifdef _AMD64_
-
-	VIRTUALIZER_TIGER_WHITE_END
-
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x48);
 #else
 	return *reinterpret_cast<unsigned int*>(static_cast<unsigned char*>(teb()) + 0x24);
@@ -206,7 +193,7 @@ __declspec(noinline) DWORD get_module_name(const HMODULE module, LPSTR module_na
 	if (length == 0)
 	{
 		#pragma warning(disable : 4996)
-		strncpy(module_name, "<not found>", size - 1);
+		strncpy(module_name, (LPCSTR)hide_str("<not found>"), size - 1);
 		return err_mod_name_not_found;
 	}
 
@@ -246,7 +233,7 @@ __declspec(noinline) DWORD replace_exec_section(const HMODULE module, LPVOID map
 	{
 		const auto image_section_header = reinterpret_cast<PIMAGE_SECTION_HEADER>(reinterpret_cast<DWORD_PTR>(
 			IMAGE_FIRST_SECTION(image_nt_headers)) + static_cast<DWORD_PTR>(IMAGE_SIZEOF_SECTION_HEADER) * i);
-		if (!strcmp(reinterpret_cast<const char*>(image_section_header->Name), ".text"))
+		if (!strcmp(reinterpret_cast<const char*>(image_section_header->Name), (LPCSTR)hide_str(".text")))
 		{
 			auto protect = protect_memory(
 				reinterpret_cast<LPVOID>(reinterpret_cast<DWORD_PTR>(module) + static_cast<DWORD_PTR>(
@@ -258,7 +245,7 @@ __declspec(noinline) DWORD replace_exec_section(const HMODULE module, LPVOID map
 				return err_mem_deprotect_failed;
 			}
 
-			memcpy(
+			copy_memory(
 				reinterpret_cast<LPVOID>(reinterpret_cast<DWORD_PTR>(module) + static_cast<DWORD_PTR>(
 					image_section_header->VirtualAddress)),
 				reinterpret_cast<LPVOID>(reinterpret_cast<DWORD_PTR>(mapping) + static_cast<DWORD_PTR>(
@@ -353,11 +340,11 @@ __declspec(noinline) HMODULE add_module(const char* lib_name)
 {
 	VIRTUALIZER_TIGER_WHITE_START
 
-	auto module = GetModuleHandleA(lib_name);
+	auto module = GetModuleHandleA((LPCSTR)hide_str(lib_name));
 
 	if (!module)
 	{
-		module = LoadLibraryA(lib_name);
+		module = LoadLibraryA((LPCSTR)hide_str(lib_name));
 	}
 
 	VIRTUALIZER_TIGER_WHITE_END
@@ -369,7 +356,7 @@ __declspec(noinline) DWORD unhook(const char* lib_name)
 {
 	VIRTUALIZER_TIGER_WHITE_START
 
-	const auto module = add_module(lib_name);
+	const auto module = add_module((LPCSTR)hide_str(lib_name));
 
 	const auto h_mod = unhook_module(module);
 

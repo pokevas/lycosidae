@@ -9,6 +9,8 @@
 #include <winternl.h>
 
 #include "utils.hpp"
+#include "hide_str.hpp"
+using namespace hide_string;
 
 __declspec(noinline) int check_remote_debugger_present_api()
 {
@@ -23,25 +25,25 @@ __declspec(noinline) int check_remote_debugger_present_api()
 	return dbg_present;
 }
 
-__declspec(noinline) int nt_close_invalid_handle()
-{
-	VIRTUALIZER_TIGER_WHITE_START
-
-	const auto nt_close = reinterpret_cast<NtCloseTypedef>(GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtClose"));
-
-	__try
-	{
-		nt_close(reinterpret_cast<HANDLE>(0x99999999ULL));
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		return 1;
-	}
-
-	VIRTUALIZER_TIGER_WHITE_END
-
-	return 0;
-}
+//__declspec(noinline) int nt_close_invalid_handle()
+//{
+//	VIRTUALIZER_TIGER_WHITE_START
+//
+//	const auto nt_close = reinterpret_cast<NtCloseTypedef>(GetProcAddress(GetModuleHandleA((LPCSTR)hide_str("ntdll.dll")), (LPCSTR)hide_str("NtClose")));
+//
+//	__try
+//	{
+//		nt_close(reinterpret_cast<HANDLE>(0x99999999ULL));
+//	}
+//	__except (EXCEPTION_EXECUTE_HANDLER)
+//	{
+//		return 1;
+//	}
+//
+//	VIRTUALIZER_TIGER_WHITE_END
+//
+//	return 0;
+//}
 
 __declspec(noinline) int nt_query_information_process_debug_flags()
 {
@@ -50,7 +52,7 @@ __declspec(noinline) int nt_query_information_process_debug_flags()
 	const auto debug_flags = 0x1f;
 
 	const auto query_info_process = reinterpret_cast<NtQueryInformationProcessTypedef>(GetProcAddress(
-		GetModuleHandleW(L"ntdll.dll"), "NtQueryInformationProcess"));
+		GetModuleHandleA((LPCSTR)hide_str("ntdll.dll")), (LPCSTR)hide_str("NtQueryInformationProcess")));
 
 	auto debug_inherit = 0;
 
@@ -75,7 +77,7 @@ __declspec(noinline) int nt_query_information_process_debug_object()
 	const auto debug_object_handle = 0x1e;
 
 	const auto query_info_process = reinterpret_cast<NtQueryInformationProcessTypedef>(GetProcAddress(
-		GetModuleHandleW(L"ntdll.dll"), "NtQueryInformationProcess"));
+		GetModuleHandleA((LPCSTR)hide_str("ntdll.dll")), (LPCSTR)hide_str("NtQueryInformationProcess")));
 
 	HANDLE debug_object = nullptr;
 
@@ -101,7 +103,7 @@ __declspec(noinline) int nt_query_object_all_types_information()
 	VIRTUALIZER_TIGER_WHITE_START
 
 	const auto query_object = reinterpret_cast<NtQueryObjectTypedef>(GetProcAddress(
-		GetModuleHandleW(L"ntdll.dll"), "NtQueryObject"));
+		GetModuleHandleA((LPCSTR)hide_str("ntdll.dll")), (LPCSTR)hide_str("NtQueryObject")));
 
 	unsigned long size;
 
@@ -131,7 +133,7 @@ __declspec(noinline) int nt_query_object_all_types_information()
 	{
 		const auto type_info = reinterpret_cast<pobject_type_information>(location);
 
-		if (strcmp_impl(static_cast<const char*>("DebugObject"),
+		if (strcmp_impl(static_cast<const char*>((LPCSTR)hide_str("DebugObject")),
 		                 reinterpret_cast<const char*>(type_info->type_name.Buffer)) == 0)
 		{
 			if (type_info->total_number_of_objects > 0)
@@ -201,17 +203,17 @@ __declspec(noinline) int process_job()
 					{
 						const auto process_name_buffer_size = 4096;
 
-						const auto process_name = static_cast<LPTSTR>(malloc(sizeof(TCHAR) * process_name_buffer_size));
+						const auto process_name = static_cast<LPSTR>(malloc(sizeof(CHAR) * process_name_buffer_size));
 
 						if (process_name)
 						{
-							SecureZeroMemory(process_name, sizeof(TCHAR) * process_name_buffer_size);
+							SecureZeroMemory(process_name, sizeof(CHAR) * process_name_buffer_size);
 
-							if (GetProcessImageFileName(process, process_name, process_name_buffer_size) > 0)
+							if (GetProcessImageFileNameA(process, process_name, process_name_buffer_size) > 0)
 							{
-								wstring str(process_name);
+								string str(process_name);
 
-								if (str.find(static_cast<wstring>(L"\\Windows\\System32\\conhost.exe")) != string::npos)
+								if (str.find(static_cast<string>((LPCSTR)hide_str("\\Windows\\System32\\conhost.exe"))) != string::npos)
 								{
 									processes++;
 								}
@@ -240,10 +242,10 @@ __declspec(noinline) int titanhide()
 {
 	VIRTUALIZER_TIGER_WHITE_START
 
-	const auto module = GetModuleHandleW(L"ntdll.dll");
+	const auto module = GetModuleHandleA((LPCSTR)hide_str("ntdll.dll"));
 
 	const auto information = reinterpret_cast<NtQuerySystemInformationTypedef>(GetProcAddress(
-		module, "NtQuerySystemInformation"));
+		module, (LPCSTR)hide_str("NtQuerySystemInformation")));
 
 	SYSTEM_CODEINTEGRITY_INFORMATION sci;
 

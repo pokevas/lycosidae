@@ -106,10 +106,8 @@ typedef struct object_all_information
 	object_type_information object_type_information[1];
 } object_all_information, *pobject_all_information;
 
-__declspec(noinline) int strcmp_impl(const char* x, const char* y)
+__forceinline int strcmp_impl(const char* x, const char* y)
 {
-	VIRTUALIZER_TIGER_WHITE_START
-
 	while (*x)
 	{
 		if (*x != *y)
@@ -118,26 +116,92 @@ __declspec(noinline) int strcmp_impl(const char* x, const char* y)
 		y++;
 	}
 
-	VIRTUALIZER_TIGER_WHITE_END
-
 	return *static_cast<const char*>(x) - *static_cast<const char*>(y);
 }
 
+__forceinline static std::size_t min_add_header(size_t a, size_t b)
+{
+	return (a > b) ? a : b;
+}
+
+
+__forceinline static void big_copy(void* dest, const void* src, size_t iterations)
+{
+	auto d = static_cast<long *>(dest);
+	auto s = static_cast<const long *>(src);
+	auto eight = iterations / 8;
+	auto single = iterations % 8;
+	while (eight > 0)
+	{
+		*d++ = *s++;
+		*d++ = *s++;
+		*d++ = *s++;
+		*d++ = *s++;
+		*d++ = *s++;
+		*d++ = *s++;
+		*d++ = *s++;
+		*d++ = *s++;
+		--eight;
+	}
+	while (single > 0)
+	{
+		*d++ = *s++;
+		--single;
+	}
+}
+
+__forceinline static void small_copy(void* dest, const void* src, size_t iterations)
+{
+	auto d = static_cast<char *>(dest);
+	auto s = static_cast<const char *>(src);
+	while (iterations > 0)
+	{
+		*d++ = *s++;
+		--iterations;
+	}
+}
+
+__forceinline void* copy_memory(void* dest, const void* src, size_t size)
+{
+	//Small size is handled here
+	if (size < sizeof(long))
+	{
+		small_copy(dest, src, size);
+		return dest;
+	}
+	//Start copying 8 bytes as soon as one of the pointers is aligned
+	auto bytes_to_align = min_add_header((size_t)dest % sizeof(long), (size_t)src % sizeof(long));
+	auto position = dest;
+	//Align
+	if (bytes_to_align > 0)
+	{
+		small_copy(position, src, bytes_to_align);
+		position = static_cast<char *>(position) + bytes_to_align;
+		src = (char *)src + bytes_to_align;
+		size -= bytes_to_align;
+	}
+	//How many iterations can be done
+	auto safe_big_iterations = size / sizeof(long);
+	auto remaining_bytes = size % sizeof(long);
+	//Copy most bytes here
+	big_copy(position, src, safe_big_iterations);
+	position = static_cast<char *>(position) + safe_big_iterations * sizeof(long);
+	src = (char *)src + safe_big_iterations * sizeof(long);
+	//Process the remaining bytes
+	small_copy(position, src, remaining_bytes);
+	return dest;
+}
+
+
 __declspec(noinline) void log()
 {
-	VIRTUALIZER_TIGER_WHITE_START
-	VIRTUALIZER_TIGER_WHITE_END
 }
 
 template <typename First, typename ...Rest>
 __declspec(noinline) void log(First&& message, Rest&&...rest)
 {
-	VIRTUALIZER_TIGER_WHITE_START
-
 	cout << forward<First>(message);
 	log(forward<Rest>(rest)...);
-
-	VIRTUALIZER_TIGER_WHITE_END
 }
 
 #endif

@@ -29,5 +29,8 @@
     <ClInclude Include="debugger_detect.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="hide_str.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
