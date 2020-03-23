@@ -33,9 +33,9 @@ int main()
 	{
 		log("user32 fail restored\r\n");
 	}
-	
+
 	// Debugger detect
-	// 
+	//
 	if (nt_close_invalid_handle() != 0)
 	{
 		log("CloseHandle with an invalid handle detected\r\n");
