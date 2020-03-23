@@ -106,7 +106,7 @@ typedef struct object_all_information
 	object_type_information object_type_information[1];
 } object_all_information, *pobject_all_information;
 
-int strcmp_impl(const char* x, const char* y)
+__declspec(noinline) int strcmp_impl(const char* x, const char* y)
 {
 	while (*x)
 	{
@@ -119,12 +119,12 @@ int strcmp_impl(const char* x, const char* y)
 	return *static_cast<const char*>(x) - *static_cast<const char*>(y);
 }
 
-void log()
+__declspec(noinline) void log()
 {
 }
 
 template <typename First, typename ...Rest>
-void log(First&& message, Rest&&...rest)
+__declspec(noinline) void log(First&& message, Rest&&...rest)
 {
 	cout << forward<First>(message);
 	log(forward<Rest>(rest)...);
