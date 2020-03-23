@@ -106,7 +106,7 @@ typedef struct object_all_information
 	object_type_information object_type_information[1];
 } object_all_information, *pobject_all_information;
 
-int str_cmp_impl(const char* x, const char* y)
+int strcmp_impl(const char* x, const char* y)
 {
 	while (*x)
 	{

@@ -113,7 +113,7 @@ __declspec(noinline) int nt_query_object_all_types_information()
 	{
 		const auto type_info = reinterpret_cast<pobject_type_information>(location);
 
-		if (str_cmp_impl(static_cast<const char*>("DebugObject"),
+		if (strcmp_impl(static_cast<const char*>("DebugObject"),
 		                 reinterpret_cast<const char*>(type_info->type_name.Buffer)) == 0)
 		{
 			if (type_info->total_number_of_objects > 0)
