@@ -28,7 +28,7 @@ namespace hide_string
 		uint32_t size_crypt_ = 0;
 		uint32_t size_decrypt_data_ = 0;
 	protected:
-		static uint32_t rol(const uint32_t base, uint32_t shift)
+		 static uint32_t rol(const uint32_t base, uint32_t shift)
 		{
 			shift &= 0x1F;
 			const int32_t res = base << shift | base >> unsigned(32 - shift);
@@ -132,8 +132,10 @@ namespace hide_string
 			VIRTUALIZER_TIGER_WHITE_END
 		}
 
-		__forceinline uint8_t* data_crypt(const uint8_t* data, const uint32_t key[8], const uint32_t size)
+		 uint8_t* data_crypt(const uint8_t* data, const uint32_t key[8], const uint32_t size)
 		{
+			VIRTUALIZER_TIGER_WHITE_START
+
 			int32_t size_crypt_tmp = size;
 
 			while (size_crypt_tmp % 16 != 0)
@@ -155,6 +157,8 @@ namespace hide_string
 			copy_memory(data_ptr_ + 8, data, size);
 
 			xtea3_data_crypt(data_ptr_ + 8, size_crypt_ - 8, true, key);
+
+			VIRTUALIZER_TIGER_WHITE_END
 
 			return data_ptr_;
 		}
@@ -187,7 +191,7 @@ namespace hide_string
 			return data_ptr_;
 		}
 
-		uint32_t get_crypt_size() const
+		 uint32_t get_crypt_size() const
 		{
 			return size_crypt_;
 		}
@@ -197,7 +201,7 @@ namespace hide_string
 
 	inline xtea3::~xtea3() = default;
 
-	__forceinline uint32_t murmur3(const void* key, int32_t len, const int32_t seed)
+	 uint32_t murmur3(const void* key, int32_t len, const int32_t seed)
 	{
 		const int32_t m = 0x5bd1e995;
 		int32_t l = len;
@@ -288,14 +292,12 @@ namespace hide_string
 
 	public:
 		template <size_t... Is>
-		constexpr hide_string_impl(const char* str, index_sequence<Is...>)
+		inline constexpr hide_string_impl(const char* str, index_sequence<Is...>)
 			: key_(random_char<K>::value), encrypted_
 			  {
 				  enc(str[Is])...
 			  }
 		{
-			VIRTUALIZER_TIGER_WHITE_START
-
 			uint32_t value_for_gen_key = seed;
 
 			for (uint32_t i = 0; i < 8; i++)
@@ -304,11 +306,9 @@ namespace hide_string
 			}
 
 			crypted_str_ = data_crypt(reinterpret_cast<const uint8_t*>(encrypted_.data()), key_for_xtea3_, N);
-
-			VIRTUALIZER_TIGER_WHITE_END
 		}
 
-		uint8_t* decrypt()
+		 uint8_t* decrypt()
 		{
 			uint32_t value_for_gen_key = seed;
 

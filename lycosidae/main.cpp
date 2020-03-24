@@ -12,43 +12,14 @@ int main()
 
 	// Anti hook usermode
 	//
-	const auto ntdll = unhook((LPCSTR)hide_str("ntdll.dll"));
-	if (ntdll == 0)
-	{
-		log((LPCSTR)hide_str("ntdll restored\r\n"));
-	}
-	else
-	{
-		log((LPCSTR)hide_str("ntdll fail restored\r\n"));
-	}
+	unhook((LPCSTR)hide_str("ntdll.dll"));
 
-	const auto kernel = unhook((LPCSTR)hide_str("kernel32.dll"));
-	if (kernel == 0)
-	{
-		log((LPCSTR)hide_str("kernel32 restored\r\n"));
-	}
-	else
-	{
-		log((LPCSTR)hide_str("kernel32 fail restored\r\n"));
-	}
+	unhook((LPCSTR)hide_str("kernel32.dll"));
 
-	const auto user32 = unhook((LPCSTR)hide_str("user32.dll"));
-	if (user32 == 0)
-	{
-		log((LPCSTR)hide_str("user32 restored\r\n"));
-	}
-	else
-	{
-		log((LPCSTR)hide_str("user32 fail restored\r\n"));
-	}
+	unhook((LPCSTR)hide_str("user32.dll"));
 
 	// Debugger detect
 	//
-	/*if (nt_close_invalid_handle() != 0)
-	{
-		log((LPCSTR)hide_str("CloseHandle with an invalid handle detected\r\n"));
-	}*/
-
 	if (check_remote_debugger_present_api() != 0)
 	{
 		log((LPCSTR)hide_str("CheckRemoteDebuggerPresent detected\r\n"));

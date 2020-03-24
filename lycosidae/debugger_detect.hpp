@@ -25,26 +25,6 @@ __declspec(noinline) int check_remote_debugger_present_api()
 	return dbg_present;
 }
 
-//__declspec(noinline) int nt_close_invalid_handle()
-//{
-//	VIRTUALIZER_TIGER_WHITE_START
-//
-//	const auto nt_close = reinterpret_cast<NtCloseTypedef>(GetProcAddress(GetModuleHandleA((LPCSTR)hide_str("ntdll.dll")), (LPCSTR)hide_str("NtClose")));
-//
-//	__try
-//	{
-//		nt_close(reinterpret_cast<HANDLE>(0x99999999ULL));
-//	}
-//	__except (EXCEPTION_EXECUTE_HANDLER)
-//	{
-//		return 1;
-//	}
-//
-//	VIRTUALIZER_TIGER_WHITE_END
-//
-//	return 0;
-//}
-
 __declspec(noinline) int nt_query_information_process_debug_flags()
 {
 	VIRTUALIZER_TIGER_WHITE_START
