@@ -6,6 +6,8 @@
 
 using namespace std;
 
+#include "VirtualizerSDK.h"
+
 namespace hide_string
 {
 	#define mmix(h,k) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
@@ -35,6 +37,8 @@ namespace hide_string
 
 		static void xtea3_encipher(const int32_t num_rounds, uint32_t* v, const uint32_t* k)
 		{
+			VIRTUALIZER_TIGER_WHITE_START
+
 			const int32_t delta = xtea3_delta;
 			int32_t sum = 0;
 			int32_t a = v[0] + k[0];
@@ -56,10 +60,14 @@ namespace hide_string
 			v[1] = b ^ k[5];
 			v[2] = c ^ k[6];
 			v[3] = d ^ k[7];
+
+			VIRTUALIZER_TIGER_WHITE_END
 		};
 
 		static void xtea3_decipher(const int32_t num_rounds, uint32_t* v, const uint32_t* k)
 		{
+			VIRTUALIZER_TIGER_WHITE_START
+
 			const int32_t delta = xtea3_delta;
 			int32_t sum = delta * num_rounds;
 			int32_t d = v[3] ^ k[7];
@@ -81,10 +89,14 @@ namespace hide_string
 			v[2] = c - k[2];
 			v[1] = b - k[1];
 			v[0] = a - k[0];
+
+			VIRTUALIZER_TIGER_WHITE_END
 		};
 
 		static void xtea3_data_crypt(uint8_t* inout, const uint32_t len, const bool encrypt, const uint32_t* key)
 		{
+			VIRTUALIZER_TIGER_WHITE_START
+
 			static unsigned char data_array[block_size];
 			for (int32_t i = 0; i < static_cast<int32_t>(len / block_size); i++)
 			{
@@ -116,9 +128,11 @@ namespace hide_string
 				}
 				copy_memory(inout + offset, data, mod);
 			}
+
+			VIRTUALIZER_TIGER_WHITE_END
 		}
 
-		uint8_t* data_crypt(const uint8_t* data, const uint32_t key[8], const uint32_t size)
+		__forceinline uint8_t* data_crypt(const uint8_t* data, const uint32_t key[8], const uint32_t size)
 		{
 			int32_t size_crypt_tmp = size;
 
@@ -141,11 +155,14 @@ namespace hide_string
 			copy_memory(data_ptr_ + 8, data, size);
 
 			xtea3_data_crypt(data_ptr_ + 8, size_crypt_ - 8, true, key);
+
 			return data_ptr_;
 		}
 
 		uint8_t* data_decrypt(const uint8_t* data, const uint32_t key[8], const uint32_t size)
 		{
+			VIRTUALIZER_TIGER_WHITE_START
+
 			copy_memory(reinterpret_cast<char*>(&size_crypt_), data, 4);
 			copy_memory(reinterpret_cast<char*>(&size_decrypt_data_), data + 4, 4);
 			if (size_crypt_ <= size)
@@ -164,6 +181,9 @@ namespace hide_string
 			{
 				return nullptr;
 			}
+
+			VIRTUALIZER_TIGER_WHITE_END
+
 			return data_ptr_;
 		}
 
@@ -177,7 +197,7 @@ namespace hide_string
 
 	inline xtea3::~xtea3() = default;
 
-	inline uint32_t murmur3(const void* key, int32_t len, const int32_t seed)
+	__forceinline uint32_t murmur3(const void* key, int32_t len, const int32_t seed)
 	{
 		const int32_t m = 0x5bd1e995;
 		int32_t l = len;
@@ -274,6 +294,8 @@ namespace hide_string
 				  enc(str[Is])...
 			  }
 		{
+			VIRTUALIZER_TIGER_WHITE_START
+
 			uint32_t value_for_gen_key = seed;
 
 			for (uint32_t i = 0; i < 8; i++)
@@ -282,6 +304,8 @@ namespace hide_string
 			}
 
 			crypted_str_ = data_crypt(reinterpret_cast<const uint8_t*>(encrypted_.data()), key_for_xtea3_, N);
+
+			VIRTUALIZER_TIGER_WHITE_END
 		}
 
 		uint8_t* decrypt()
