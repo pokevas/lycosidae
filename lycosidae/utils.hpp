@@ -106,19 +106,6 @@ typedef struct object_all_information
 	object_type_information object_type_information[1];
 } object_all_information, *pobject_all_information;
 
-__declspec(noinline) int strcmp_impl(const char* x, const char* y)
-{
-	while (*x)
-	{
-		if (*x != *y)
-			break;
-		x++;
-		y++;
-	}
-
-	return *static_cast<const char*>(x) - *static_cast<const char*>(y);
-}
-
 __declspec(noinline) void log()
 {
 }

@@ -29,11 +29,6 @@ int main()
 		log("[!] ProcessDebugObject\r\n");
 	}
 
-	if (nt_query_object_all_types_information() != 0)
-	{
-		log("[!] ObjectAllTypesInformation\r\n");
-	}
-
 	if (titanhide() != 0)
 	{
 		log("[!] TitanHide\r\n");
