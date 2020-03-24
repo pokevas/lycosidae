@@ -22,22 +22,22 @@ int main()
 	//
 	if (check_remote_debugger_present_api() != 0)
 	{
-		log((LPCSTR)hide_str("CheckRemoteDebuggerPresent detected\r\n"));
+		log((LPCSTR)hide_str("[!] CheckRemoteDebuggerPresent\r\n"));
 	}
 
 	if (nt_query_information_process_debug_flags() != 0)
 	{
-		log((LPCSTR)hide_str("ProcessDebugFlags detected\r\n"));
+		log((LPCSTR)hide_str("[!] ProcessDebugFlags\r\n"));
 	}
 
 	if (nt_query_information_process_debug_object() != 0)
 	{
-		log((LPCSTR)hide_str("ProcessDebugObject detected\r\n"));
+		log((LPCSTR)hide_str("[!] ProcessDebugObject\r\n"));
 	}
 
 	if (nt_query_object_all_types_information() != 0)
 	{
-		log((LPCSTR)hide_str("ObjectAllTypesInformation detected\r\n"));
+		log((LPCSTR)hide_str("[!] ObjectAllTypesInformation\r\n"));
 	}
 
 	/*if (process_job() != 0)
@@ -47,10 +47,10 @@ int main()
 
 	if (titanhide() != 0)
 	{
-		log((LPCSTR)hide_str("TitanHide detected\r\n"));
+		log((LPCSTR)hide_str("[!] TitanHide\r\n"));
 	}
 
-	log((LPCSTR)hide_str("Foo program. Check source code.\r\n"));
+	log((LPCSTR)hide_str("hello world\r\n"));
 
 	getchar();
 
