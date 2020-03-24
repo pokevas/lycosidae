@@ -35,11 +35,6 @@ int main()
 		log((LPCSTR)hide_str("[!] ProcessDebugObject\r\n"));
 	}
 
-	if (nt_query_object_all_types_information() != 0)
-	{
-		log((LPCSTR)hide_str("[!] ObjectAllTypesInformation\r\n"));
-	}
-
 	if (titanhide() != 0)
 	{
 		log((LPCSTR)hide_str("[!] TitanHide\r\n"));
