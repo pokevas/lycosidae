@@ -8,6 +8,7 @@
 
 #include "utils.hpp"
 #include "hide_str.hpp"
+
 using namespace hide_string;
 
 __forceinline void* teb()
@@ -58,8 +59,7 @@ __declspec(noinline) VOID ah_free(PVOID base)
 	VIRTUALIZER_TIGER_WHITE_END
 }
 
-__declspec(noinline) BOOLEAN NTAPI enum_processes(BOOLEAN (*callback)(pwrk_system_process_information process, PVOID argument),
-                                    PVOID arg)
+__declspec(noinline) BOOLEAN NTAPI enum_processes(BOOLEAN (*callback)(pwrk_system_process_information process, PVOID argument), PVOID arg)
 {
 	VIRTUALIZER_TIGER_WHITE_START
 
@@ -92,8 +92,7 @@ __declspec(noinline) BOOLEAN NTAPI enum_processes(BOOLEAN (*callback)(pwrk_syste
 		{
 			break;
 		}
-		info = reinterpret_cast<pwrk_system_process_information>(reinterpret_cast<PBYTE>(info) + info->next_entry_offset
-		);
+		info = reinterpret_cast<pwrk_system_process_information>(reinterpret_cast<PBYTE>(info) + info->next_entry_offset);
 	}
 	while (info->next_entry_offset);
 
@@ -122,8 +121,7 @@ __declspec(noinline) BOOLEAN suspend_resume_callback(pwrk_system_process_informa
 
 	for (unsigned int i = 0; i < process->number_of_threads; ++i)
 	{
-		if (reinterpret_cast<SIZE_T>(process->threads[i].ClientId.UniqueThread) == static_cast<SIZE_T>(info->current_tid
-			)
+		if (reinterpret_cast<SIZE_T>(process->threads[i].ClientId.UniqueThread) == static_cast<SIZE_T>(info->current_tid)
 		)
 		{
 			continue;

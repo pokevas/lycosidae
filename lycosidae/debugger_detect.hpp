@@ -10,6 +10,7 @@
 
 #include "utils.hpp"
 #include "hide_str.hpp"
+
 using namespace hide_string;
 
 __declspec(noinline) int check_remote_debugger_present_api()
