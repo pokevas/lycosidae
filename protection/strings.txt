@@ -1,24 +1,15 @@
-.rdata:0000000140004480	0000000C	C	<not found>
-.rdata:000000014000448C	00000006	C	.text
-.rdata:0000000140004498	00000008	C	NtClose
-.rdata:00000001400044B8	0000001A	C	NtQueryInformationProcess
-.rdata:00000001400044D8	0000000E	C	NtQueryObject
-.rdata:00000001400044E8	0000000C	C	DebugObject
-.rdata:0000000140004538	00000019	C	NtQuerySystemInformation
-.rdata:0000000140004558	0000000A	C	ntdll.dll
-.rdata:0000000140004568	00000011	C	ntdll restored\r\n
-.rdata:0000000140004580	00000016	C	ntdll fail restored\r\n
-.rdata:0000000140004598	0000000D	C	kernel32.dll
-.rdata:00000001400045A8	00000014	C	kernel32 restored\r\n
-.rdata:00000001400045C0	00000019	C	kernel32 fail restored\r\n
-.rdata:00000001400045E0	0000000B	C	user32.dll
-.rdata:00000001400045F0	00000012	C	user32 restored\r\n
-.rdata:0000000140004608	00000017	C	user32 fail restored\r\n
-.rdata:0000000140004620	0000002E	C	CloseHandle with an invalid handle detected\r\n
-.rdata:0000000140004650	00000026	C	CheckRemoteDebuggerPresent detected\r\n
-.rdata:0000000140004678	0000003C	C	NtQueryInformationProcess with ProcessDebugFlags detected\r\n
-.rdata:00000001400046B8	0000003D	C	NtQueryInformationProcess with ProcessDebugObject detected\r\n
-.rdata:00000001400046F8	00000038	C	NtQueryObject with ObjectAllTypesInformation detected\r\n
-.rdata:0000000140004730	00000022	C	If process is in a job detected\r\n
-.rdata:0000000140004758	00000015	C	TitanHide detected\r\n
-.rdata:0000000140004770	00000022	C	Foo program. Check source code.\r\n
+.rdata:0000000140003370	0000000C	C	<not found>
+.rdata:000000014000337C	00000006	C	.text
+.rdata:0000000140003388	0000001A	C	NtQueryInformationProcess
+.rdata:00000001400033A8	0000000A	C	ntdll.dll
+.rdata:00000001400033B8	0000000E	C	NtQueryObject
+.rdata:00000001400033C8	0000000C	C	DebugObject
+.rdata:00000001400033D8	00000019	C	NtQuerySystemInformation
+.rdata:00000001400033F8	0000000D	C	kernel32.dll
+.rdata:0000000140003408	0000000B	C	user32.dll
+.rdata:0000000140003418	00000021	C	[!] CheckRemoteDebuggerPresent\r\n
+.rdata:0000000140003440	00000018	C	[!] ProcessDebugFlags\r\n
+.rdata:0000000140003458	00000019	C	[!] ProcessDebugObject\r\n
+.rdata:0000000140003478	00000020	C	[!] ObjectAllTypesInformation\r\n
+.rdata:0000000140003498	00000010	C	[!] TitanHide\r\n
+.rdata:00000001400034A8	0000000E	C	hello world\r\n
