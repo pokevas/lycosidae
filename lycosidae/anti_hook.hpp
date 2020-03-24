@@ -360,7 +360,7 @@ __declspec(noinline) DWORD unhook(const char* lib_name)
 
 	const auto h_mod = unhook_module(module);
 
-	FreeModule(module);
+	FreeLibrary(module);
 
 	VIRTUALIZER_TIGER_WHITE_END
 
