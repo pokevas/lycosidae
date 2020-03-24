@@ -19,22 +19,6 @@ __declspec(noinline) int check_remote_debugger_present_api()
 	return dbg_present;
 }
 
-__declspec(noinline) int nt_close_invalid_handle()
-{
-	const auto nt_close = reinterpret_cast<NtCloseTypedef>(GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "NtClose"));
-
-	__try
-	{
-		nt_close(reinterpret_cast<HANDLE>(0x99999999ULL));
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		return 1;
-	}
-
-	return 0;
-}
-
 __declspec(noinline) int nt_query_information_process_debug_flags()
 {
 	const auto debug_flags = 0x1f;
@@ -143,73 +127,6 @@ __declspec(noinline) int nt_query_object_all_types_information()
 	VirtualFree(address, 0, MEM_RELEASE);
 
 	return 0;
-}
-
-__declspec(noinline) int process_job()
-{
-	auto found_problem = 0;
-
-	const auto struct_size = sizeof(JOBOBJECT_BASIC_PROCESS_ID_LIST) + sizeof(ULONG_PTR) * 1024;
-
-	auto process_id_list = static_cast<JOBOBJECT_BASIC_PROCESS_ID_LIST*>(malloc(struct_size));
-
-	if (process_id_list)
-	{
-		SecureZeroMemory(process_id_list, struct_size);
-
-		process_id_list->NumberOfProcessIdsInList = 1024;
-
-		if (QueryInformationJobObject(nullptr, JobObjectBasicProcessIdList, process_id_list, struct_size, nullptr))
-		{
-			auto processes = 0;
-
-			for (auto i = 0; i < static_cast<int>(process_id_list->NumberOfAssignedProcesses); i++)
-			{
-				const auto process_id = process_id_list->ProcessIdList[i];
-
-				if (process_id == static_cast<ULONG_PTR>(GetCurrentProcessId()))
-				{
-					processes++;
-				}
-				else
-				{
-					const auto process = OpenProcess(PROCESS_QUERY_INFORMATION, 0, static_cast<DWORD>(process_id));
-
-					if (process != nullptr)
-					{
-						const auto process_name_buffer_size = 4096;
-
-						const auto process_name = static_cast<LPTSTR>(malloc(sizeof(TCHAR) * process_name_buffer_size));
-
-						if (process_name)
-						{
-							SecureZeroMemory(process_name, sizeof(TCHAR) * process_name_buffer_size);
-
-							if (GetProcessImageFileName(process, process_name, process_name_buffer_size) > 0)
-							{
-								wstring str(process_name);
-
-								if (str.find(static_cast<wstring>(L"\\Windows\\System32\\conhost.exe")) != string::npos)
-								{
-									processes++;
-								}
-							}
-
-							free(process_name);
-						}
-
-						CloseHandle(process);
-					}
-				}
-			}
-
-			found_problem = processes != static_cast<int>(process_id_list->NumberOfAssignedProcesses);
-		}
-
-		free(process_id_list);
-	}
-
-	return found_problem;
 }
 
 __declspec(noinline) int titanhide()
