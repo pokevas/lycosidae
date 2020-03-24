@@ -40,11 +40,6 @@ int main()
 		log((LPCSTR)hide_str("[!] ObjectAllTypesInformation\r\n"));
 	}
 
-	/*if (process_job() != 0)
-	{
-		log((LPCSTR)hide_str("If process is in a job detected\r\n"));
-	}*/
-
 	if (titanhide() != 0)
 	{
 		log((LPCSTR)hide_str("[!] TitanHide\r\n"));
