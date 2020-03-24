@@ -340,11 +340,11 @@ __declspec(noinline) HMODULE add_module(const char* lib_name)
 {
 	VIRTUALIZER_TIGER_WHITE_START
 
-	auto module = GetModuleHandleA((LPCSTR)hide_str(lib_name));
+	auto module = GetModuleHandleA(lib_name);
 
 	if (!module)
 	{
-		module = LoadLibraryA((LPCSTR)hide_str(lib_name));
+		module = LoadLibraryA(lib_name);
 	}
 
 	VIRTUALIZER_TIGER_WHITE_END
@@ -356,7 +356,7 @@ __declspec(noinline) DWORD unhook(const char* lib_name)
 {
 	VIRTUALIZER_TIGER_WHITE_START
 
-	const auto module = add_module((LPCSTR)hide_str(lib_name));
+	const auto module = add_module(lib_name);
 
 	const auto h_mod = unhook_module(module);
 

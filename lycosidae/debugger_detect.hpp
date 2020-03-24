@@ -167,76 +167,76 @@ __declspec(noinline) int nt_query_object_all_types_information()
 	return 0;
 }
 
-__declspec(noinline) int process_job()
-{
-	VIRTUALIZER_TIGER_WHITE_START
-
-	auto found_problem = 0;
-
-	const auto struct_size = sizeof(JOBOBJECT_BASIC_PROCESS_ID_LIST) + sizeof(ULONG_PTR) * 1024;
-
-	auto process_id_list = static_cast<JOBOBJECT_BASIC_PROCESS_ID_LIST*>(malloc(struct_size));
-
-	if (process_id_list)
-	{
-		SecureZeroMemory(process_id_list, struct_size);
-
-		process_id_list->NumberOfProcessIdsInList = 1024;
-
-		if (QueryInformationJobObject(nullptr, JobObjectBasicProcessIdList, process_id_list, struct_size, nullptr))
-		{
-			auto processes = 0;
-
-			for (auto i = 0; i < static_cast<int>(process_id_list->NumberOfAssignedProcesses); i++)
-			{
-				const auto process_id = process_id_list->ProcessIdList[i];
-
-				if (process_id == static_cast<ULONG_PTR>(GetCurrentProcessId()))
-				{
-					processes++;
-				}
-				else
-				{
-					const auto process = OpenProcess(PROCESS_QUERY_INFORMATION, 0, static_cast<DWORD>(process_id));
-
-					if (process != nullptr)
-					{
-						const auto process_name_buffer_size = 4096;
-
-						const auto process_name = static_cast<LPSTR>(malloc(sizeof(CHAR) * process_name_buffer_size));
-
-						if (process_name)
-						{
-							SecureZeroMemory(process_name, sizeof(CHAR) * process_name_buffer_size);
-
-							if (GetProcessImageFileNameA(process, process_name, process_name_buffer_size) > 0)
-							{
-								string str(process_name);
-
-								if (str.find(static_cast<string>((LPCSTR)hide_str("\\Windows\\System32\\conhost.exe"))) != string::npos)
-								{
-									processes++;
-								}
-							}
-
-							free(process_name);
-						}
-
-						CloseHandle(process);
-					}
-				}
-			}
-
-			found_problem = processes != static_cast<int>(process_id_list->NumberOfAssignedProcesses);
-		}
-
-		free(process_id_list);
-	}
-
-	VIRTUALIZER_TIGER_WHITE_END
-
-	return found_problem;
-}
+//__declspec(noinline) int process_job()
+//{
+//	VIRTUALIZER_TIGER_WHITE_START
+//
+//	auto found_problem = 0;
+//
+//	const auto struct_size = sizeof(JOBOBJECT_BASIC_PROCESS_ID_LIST) + sizeof(ULONG_PTR) * 1024;
+//
+//	auto process_id_list = static_cast<JOBOBJECT_BASIC_PROCESS_ID_LIST*>(malloc(struct_size));
+//
+//	if (process_id_list)
+//	{
+//		SecureZeroMemory(process_id_list, struct_size);
+//
+//		process_id_list->NumberOfProcessIdsInList = 1024;
+//
+//		if (QueryInformationJobObject(nullptr, JobObjectBasicProcessIdList, process_id_list, struct_size, nullptr))
+//		{
+//			auto processes = 0;
+//
+//			for (auto i = 0; i < static_cast<int>(process_id_list->NumberOfAssignedProcesses); i++)
+//			{
+//				const auto process_id = process_id_list->ProcessIdList[i];
+//
+//				if (process_id == static_cast<ULONG_PTR>(GetCurrentProcessId()))
+//				{
+//					processes++;
+//				}
+//				else
+//				{
+//					const auto process = OpenProcess(PROCESS_QUERY_INFORMATION, 0, static_cast<DWORD>(process_id));
+//
+//					if (process != nullptr)
+//					{
+//						const auto process_name_buffer_size = 4096;
+//
+//						const auto process_name = static_cast<LPSTR>(malloc(sizeof(CHAR) * process_name_buffer_size));
+//
+//						if (process_name)
+//						{
+//							SecureZeroMemory(process_name, sizeof(CHAR) * process_name_buffer_size);
+//
+//							if (GetProcessImageFileNameA(process, process_name, process_name_buffer_size) > 0)
+//							{
+//								string str(process_name);
+//
+//								if (str.find(static_cast<string>((LPCSTR)hide_str("\\Windows\\System32\\conhost.exe"))) != string::npos)
+//								{
+//									processes++;
+//								}
+//							}
+//
+//							free(process_name);
+//						}
+//
+//						CloseHandle(process);
+//					}
+//				}
+//			}
+//
+//			found_problem = processes != static_cast<int>(process_id_list->NumberOfAssignedProcesses);
+//		}
+//
+//		free(process_id_list);
+//	}
+//
+//	VIRTUALIZER_TIGER_WHITE_END
+//
+//	return found_problem;
+//}
 
 __declspec(noinline) int titanhide()
 {

@@ -106,17 +106,16 @@ typedef struct object_all_information
 	object_type_information object_type_information[1];
 } object_all_information, *pobject_all_information;
 
-__forceinline int strcmp_impl(const char* x, const char* y)
+__forceinline int strcmp_impl(const char* X, const char* Y)
 {
-	while (*x)
+	while (*X)
 	{
-		if (*x != *y)
+		if (*X != *Y)
 			break;
-		x++;
-		y++;
+		X++;
+		Y++;
 	}
-
-	return *static_cast<const char*>(x) - *static_cast<const char*>(y);
+	return *(const unsigned char *)X - *(const unsigned char *)Y;
 }
 
 __forceinline static std::size_t min_add_header(size_t a, size_t b)

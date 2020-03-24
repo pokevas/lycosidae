@@ -69,10 +69,10 @@ int main()
 		log((LPCSTR)hide_str("ObjectAllTypesInformation detected\r\n"));
 	}
 
-	if (process_job() != 0)
+	/*if (process_job() != 0)
 	{
 		log((LPCSTR)hide_str("If process is in a job detected\r\n"));
-	}
+	}*/
 
 	if (titanhide() != 0)
 	{
